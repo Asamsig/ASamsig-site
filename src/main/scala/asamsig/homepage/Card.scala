@@ -33,6 +33,7 @@ import scala.scalajs.js.Dynamic.literal
       )
     )(
       img(
+        alt := "Alexander Samsig",
         style := literal(
           maxWidth = "100%",
           maxHeight = "205px",
@@ -59,7 +60,7 @@ import scala.scalajs.js.Dynamic.literal
         borderBottom = "2px solid rgb(220 50 47)",
         marginTop = "20px"
       )),
-      h3(
+      h2(
         style := literal(
           display = "block",
           textAlign = "center",
@@ -88,6 +89,7 @@ import scala.scalajs.js.Dynamic.literal
         a(
           href := "https://linkedin.com/in/alexander-samsig/",
           target := "_blank",
+          rel := "noopener noreferrer",
           style := smallLinkStyle
         )(
           "LinkedIn"
@@ -95,6 +97,7 @@ import scala.scalajs.js.Dynamic.literal
         a(
           href := "https://github.com/ASamsig",
           target := "_blank",
+          rel := "noopener noreferrer",
           style := smallLinkStyle
         )(
           "GitHub"
@@ -102,6 +105,7 @@ import scala.scalajs.js.Dynamic.literal
         a(
           href := "https://twitter.com/ASamsig",
           target := "_blank",
+          rel := "noopener noreferrer",
           style := smallLinkStyle
         )(
           "Twitter"

@@ -22,7 +22,7 @@ object ProfilePicture extends js.Object
 
   def render() = {
     div(style := literal(
-      height = "calc(100vh - 60px)",
+      height = "calc(100vh - 80px)",
       color = "#ffffff",
       backgroundColor = "#282C34",
       paddingTop = "20px"

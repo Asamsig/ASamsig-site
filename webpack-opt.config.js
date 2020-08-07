@@ -43,7 +43,7 @@ module.exports = {
         {
           from: path.resolve(__dirname, "../../../../public"),
           globOptions: {
-            ignore: ["404.html", "404-fastopt.html"]
+            ignore: ["**/404.html", "**/404-fastopt.html"]
           }
         }
       ]
