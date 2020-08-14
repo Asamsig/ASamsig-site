@@ -1,7 +1,6 @@
 package asamsig
 
 import asamsig.context.DarkMode
-import asamsig.offlineplugin.OfflinePluginRuntime
 import asamsig.posts.TrackSSRPosts
 import asamsig.reacthelmet.ReactHelmet
 import org.scalajs.dom
@@ -31,8 +30,6 @@ object Main {
   def main(): Unit = {
     if (LinkingInfo.developmentMode) {
       hot.initialize()
-    } else {
-      OfflinePluginRuntime.install()
     }
 
     val container = Option(dom.document.getElementById("root")).getOrElse {

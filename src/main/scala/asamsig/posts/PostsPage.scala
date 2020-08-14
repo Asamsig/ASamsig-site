@@ -91,7 +91,7 @@ object TrackSSRPosts {
       xhr.send()
     }, Seq(postsFilePath(props)))
     Main.darkModeContext.Consumer(darkMode =>
-      div(className := "article fill-right", style := literal(
+      div(className := s"article ${if (darkMode.isDarkMode) "dark" else "light"} fill-right", style := literal(
         marginTop = "40px",
         paddingLeft = "15px",
         boxSizing = "border-box"

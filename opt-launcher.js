@@ -6,4 +6,5 @@ if (typeof ssr !== 'undefined') {
     };
 } else {
     opt.hydrate();
+    require('offline-plugin/runtime').install();
 }
