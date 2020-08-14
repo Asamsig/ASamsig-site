@@ -13,11 +13,13 @@ Compile / npmDependencies += "remark" -> "12.0.1"
 Compile / npmDependencies += "remark-react" -> "7.0.1"
 Compile / npmDependencies += "react-helmet" -> "6.1.0"
 Compile / npmDependencies += "history" -> "4.10.1"
+Compile / npmDependencies += "react-dark-mode-toggle" -> "0.0.9"
 
 Compile / npmDevDependencies += "url-loader" -> "4.1.0"
 Compile / npmDevDependencies += "css-loader" -> "0.28.7"
 Compile / npmDevDependencies += "html-webpack-plugin" -> "4.3.0"
 Compile / npmDevDependencies += "copy-webpack-plugin" -> "6.0.3"
+Compile / npmDevDependencies += "offline-plugin" -> "5.0.7"
 Compile / npmDevDependencies += "static-site-generator-webpack-plugin" -> "3.4.2"
 
 webpack / version := "4.44.1"

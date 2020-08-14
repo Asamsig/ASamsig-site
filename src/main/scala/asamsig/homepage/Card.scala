@@ -10,24 +10,27 @@ import scala.scalajs.js.Dynamic.literal
 
 @react object Card {
 
-  val smallLinkStyle = js.Dynamic.literal(
+  val smallLinkStyle = (color: String) => js.Dynamic.literal(
     fontSize = "15px",
-    color = "white",
+    color = color,
     fontWeight = 100,
     marginLeft = "15px",
     width = "33%",
-    textDecoration = "none"
+    textDecoration = "none",
+    transition = "color 0.3s"
   )
 
-  val component = FunctionalComponent[Unit](_ => {
+  case class Props(color: String, backgroundColor: String)
+
+  val component = FunctionalComponent[Props] { props =>
+    val linkStyle = smallLinkStyle(props.color)
     div(
       style := literal(
         width = "320px",
         marginLeft = "auto",
         marginRight = "auto",
         boxShadow = "rgba(0, 0, 0, 0.4) 0px 10px 16px 0px",
-        transition = "0.3s",
-        backgroundColor = "#282c34",
+        transition = "background-color 0.3s, color 0.0s",
         padding = "30px",
         boxSizing = "border-box"
       )
@@ -39,7 +42,7 @@ import scala.scalajs.js.Dynamic.literal
           maxHeight = "205px",
           display = "block",
           borderRadius = "50%",
-          border = "3px white solid",
+          border = s"3px ${props.color} solid",
           overflow = "hidden",
           marginLeft = "auto",
           marginRight = "auto",
@@ -90,7 +93,7 @@ import scala.scalajs.js.Dynamic.literal
           href := "https://linkedin.com/in/alexander-samsig/",
           target := "_blank",
           rel := "noopener noreferrer",
-          style := smallLinkStyle
+          style := linkStyle
         )(
           "LinkedIn"
         ),
@@ -98,7 +101,7 @@ import scala.scalajs.js.Dynamic.literal
           href := "https://github.com/ASamsig",
           target := "_blank",
           rel := "noopener noreferrer",
-          style := smallLinkStyle
+          style := linkStyle
         )(
           "GitHub"
         ),
@@ -106,11 +109,11 @@ import scala.scalajs.js.Dynamic.literal
           href := "https://twitter.com/ASamsig",
           target := "_blank",
           rel := "noopener noreferrer",
-          style := smallLinkStyle
+          style := linkStyle
         )(
           "Twitter"
         )
       )
     )
-  })
+  }
 }

@@ -4,6 +4,7 @@ const path = require("path");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const StaticSiteGeneratorPlugin = require('static-site-generator-webpack-plugin');
+const OfflinePlugin = require('offline-plugin');
 
 module.exports = {
   mode: "production",
@@ -65,6 +66,7 @@ module.exports = {
         fs: require('fs'),
         __dirname: __dirname
       }
-    })
+    }),
+    new OfflinePlugin()
   ]
 };

@@ -1,15 +1,14 @@
 package asamsig
 
-import asamsig.homepage.{Homepage, Navbar}
-import asamsig.posts.{PostsPage, TrackSSRPosts}
-import asamsig.reacthelmet.{Helmet, ReactHelmet}
+import asamsig.context.DarkMode
+import asamsig.offlineplugin.OfflinePluginRuntime
+import asamsig.posts.TrackSSRPosts
+import asamsig.reacthelmet.ReactHelmet
 import org.scalajs.dom
-import slinky.core.CustomAttribute
-import slinky.core.facade.ReactElement
+import slinky.core.facade.{React, ReactElement}
 import slinky.history.History
 import slinky.hot
 import slinky.reactrouter._
-import slinky.web.html._
 import slinky.web.{ReactDOM, ReactDOMServer}
 
 import scala.scalajs.js.annotation.{JSExportTopLevel, JSImport}
@@ -22,36 +21,18 @@ object IndexCSS extends js.Object
 object Main {
   val css = IndexCSS
 
+  val darkModeContext = React.createContext[DarkMode](DarkMode())
+
   def insideRouter: ReactElement = {
-    val charSet = CustomAttribute[String]("charSet")
-    div(
-      Helmet(
-        lang := "en",
-        meta(charSet := "utf-8"),
-        meta(name := "viewport", content := "width=device-width, initial-scale=1, shrink-to-fit=no"),
-        meta(name := "theme-color", content := "#000000"),
-        link(rel := "manifest", href := "/manifest.json"),
-        link(rel := "shortcut icon", href := "/favicon.ico"),
-        title("ASamsig"),
-        style(`type` := "text/css")(IndexCSS.toString)
-      ),
-      Navbar.component(),
-      div(style := js.Dynamic.literal(
-        marginTop = "60px"
-      ))(
-        Switch(
-          Route("/", Homepage, exact = true),
-          Route("/posts/*", PostsPage.component),
-          Route("*", Homepage)
-        )
-      )
-    )
+    App.component()
   }
 
   @JSExportTopLevel("main")
   def main(): Unit = {
     if (LinkingInfo.developmentMode) {
       hot.initialize()
+    } else {
+      OfflinePluginRuntime.install()
     }
 
     val container = Option(dom.document.getElementById("root")).getOrElse {
@@ -84,7 +65,7 @@ object Main {
     val helmetContent = ReactHelmet.Helmet.renderStatic()
 
     s"""<!DOCTYPE html>
-       |<html>
+       |<html lang="en">
        |  <head>
        |    ${helmetContent.title.toString}
        |    ${helmetContent.meta.toString}

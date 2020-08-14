@@ -90,58 +90,61 @@ object TrackSSRPosts {
       xhr.open("GET", postsFilePath(props))
       xhr.send()
     }, Seq(postsFilePath(props)))
-
-    div(className := "article fill-right", style := literal(
-      marginTop = "40px",
-      paddingLeft = "15px",
-      boxSizing = "border-box"
-    ))(
-      div(style := literal(
-        display = "flex",
-        flexDirection = "row"
-      ), className := "posts-page")(
+    Main.darkModeContext.Consumer(darkMode =>
+      div(className := "article fill-right", style := literal(
+        marginTop = "40px",
+        paddingLeft = "15px",
+        boxSizing = "border-box"
+      ))(
         div(style := literal(
-          width = "calc(100% - 300px)"
-        ), className := "posts-content")(
-          div(style := literal(maxWidth = "1400px"))(
-            document.map { t =>
-              Remark().use(ReactRenderer, literal(
-                remarkReactComponents = literal(
-                  h1 = RemarkH1.component: ReactComponentClass[_],
-                  h2 = RemarkH2.component: ReactComponentClass[_]
-                )
-              )).processSync(t).result
-            }
-          )
-        ),
-        div(style := literal(
-          width = "300px",
-          marginLeft = "20px"
-        ), className := "posts-sidebar")(
-          div(
-            style := literal(
-              position = "fixed",
-              top = "60px",
-              height = "calc(100vh - 60px)",
-              backgroundColor = "#f7f7f7",
-              borderLeft = "1px solid #ececec",
-              paddingTop = "40px",
-              paddingRight = "1000px",
-              boxSizing = "border-box"
-            ),
-            className := "posts-sidebar-content"
-          )(
-            nav(style := literal(
-              position = "relative",
-              paddingLeft = "20px",
-              width = "300px"
-            ))(
-              PostsTree.tree.map { case (group, value) =>
-                PostsGroup(
-                  name = group,
-                  isOpen = selectedGroup.contains(group)
-                )(value).withKey(group)
+          display = "flex",
+          flexDirection = "row",
+          transition = "background-color 0.3s, color 0.3s",
+          color = darkMode.color
+        ), className := "posts-page")(
+          div(style := literal(
+            width = "calc(100% - 300px)"
+          ), className := "posts-content")(
+            div(style := literal(maxWidth = "1400px"))(
+              document.map { t =>
+                Remark().use(ReactRenderer, literal(
+                  remarkReactComponents = literal(
+                    h1 = RemarkH1.component: ReactComponentClass[_],
+                    h2 = RemarkH2.component: ReactComponentClass[_]
+                  )
+                )).processSync(t).result
               }
+            )
+          ),
+          div(style := literal(
+            width = "300px",
+            marginLeft = "20px"
+          ), className := "posts-sidebar")(
+            div(
+              style := literal(
+                position = "fixed",
+                top = "60px",
+                height = "calc(100vh - 60px)",
+                backgroundColor = "#f7f7f7",
+                borderLeft = "1px solid #ececec",
+                paddingTop = "40px",
+                paddingRight = "1000px",
+                boxSizing = "border-box"
+              ),
+              className := "posts-sidebar-content"
+            )(
+              nav(style := literal(
+                position = "relative",
+                paddingLeft = "20px",
+                width = "300px"
+              ))(
+                PostsTree.tree.map { case (group, value) =>
+                  PostsGroup(
+                    name = group,
+                    isOpen = selectedGroup.contains(group)
+                  )(value).withKey(group)
+                }
+              )
             )
           )
         )

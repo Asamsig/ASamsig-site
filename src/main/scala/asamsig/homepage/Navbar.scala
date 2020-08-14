@@ -1,9 +1,11 @@
 package asamsig.homepage
 
+import asamsig.Main
+import asamsig.reactdarkmodetoggle.DarkModeToggle
 import slinky.core.FunctionalComponent
 import slinky.core.annotations.react
 import slinky.reactrouter.Link
-import slinky.web.html.{div, header, style}
+import slinky.web.html.{className, div, header, style}
 
 import scala.scalajs.js
 
@@ -71,7 +73,20 @@ import scala.scalajs.js
           Link(to = "/posts/welcome")(style := linkStyle)(
             "Blog"
           )
-        )
+        ),
+        Main.darkModeContext.Consumer { darkMode =>
+          div(
+            style := js.Dynamic.literal(
+              display = "flex",
+              height = "100%",
+              alignItems = "center",
+              marginRight = "20px"
+            ),
+            className := "sidebar-right"
+          )(
+            DarkModeToggle(darkMode.toggleDarkMode, darkMode.isDarkMode, 80, 3)
+          )
+        }
       )
     )
   })

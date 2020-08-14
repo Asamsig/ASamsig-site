@@ -5,6 +5,8 @@ body {
   line-height: 1;
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s, color 0.3s;
+  background-color: #282C34;
 }
 h3 {
   font-size: 25px;
@@ -70,12 +72,6 @@ a {
 @media screen and (min-width: 1400px) {
   .article.fill-right {
     margin-left: calc(50vw - 700px);
-  }
-}
-
-@media (max-height: 530px) {
-  .main-background {
-    height: auto !important;
   }
 }
 

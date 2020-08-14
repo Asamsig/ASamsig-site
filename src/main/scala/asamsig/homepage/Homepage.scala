@@ -1,8 +1,10 @@
 package asamsig.homepage
 
+import asamsig.Main
 import org.scalajs.dom
-import slinky.core.StatelessComponent
+import slinky.core.FunctionalComponent
 import slinky.core.annotations.react
+import slinky.core.facade.Hooks._
 import slinky.web.html._
 
 import scala.scalajs.js
@@ -13,21 +15,20 @@ import scala.scalajs.js.annotation.JSImport
 @js.native
 object ProfilePicture extends js.Object
 
-@react class Homepage extends StatelessComponent {
-  type Props = Unit
+@react object Homepage {
 
-  override def componentDidMount(): Unit = {
-    dom.window.scrollTo(0, 0)
-  }
+  val component = FunctionalComponent[Unit] { _ =>
+    useEffect(() => {
+      dom.window.scrollTo(0, 0)
+    })
 
-  def render() = {
-    div(style := literal(
-      height = "calc(100vh - 80px)",
-      color = "#ffffff",
-      backgroundColor = "#282C34",
-      paddingTop = "20px"
-    ), className := "main-background")(
-      Card.component()
+    Main.darkModeContext.Consumer(darkMode =>
+      div(style := literal(
+        color = darkMode.color,
+        paddingTop = "20px"
+      ))(
+        Card(darkMode.color, darkMode.backgroundColor)
+      )
     )
   }
 }
