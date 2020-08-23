@@ -75,7 +75,7 @@ import scala.scalajs.js.Dynamic.literal
         display = "flex",
         marginBottom = "20px",
       ))(
-        Link(to = "/posts/welcome")(className := "cta-button", style := literal(
+        Link(to = "/posts/welcome.html")(className := "cta-button", style := literal(
           margin = "0 auto"
         ))(
           "Blog"
