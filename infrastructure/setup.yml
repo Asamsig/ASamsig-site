@@ -90,7 +90,7 @@ Resources:
           DefaultTTL: 2592000 # in seconds
           TargetOriginId: !Sub 's3-origin-${DomainName}'
           ViewerProtocolPolicy: 'redirect-to-https'
-        DefaultRootObject: 'index.html'
+        DefaultRootObject: ''
         Enabled: true
         HttpVersion: http2
         IPV6Enabled: false

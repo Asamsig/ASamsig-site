@@ -5,8 +5,8 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 module.exports = {
   mode: "development",
   entry: {
-    "dependencies": ["./asamsig-site-fastopt-entrypoint.js"],
-    "asamsig-site-fastopt": ["./hot-launcher.js"]
+    "dependencies": ["./site-fastopt-entrypoint.js"],
+    "site-fastopt": ["./hot-launcher.js"]
   },
   output: {
     path: __dirname,
@@ -56,7 +56,6 @@ module.exports = {
   ],
   devServer: {
     historyApiFallback: {
-      disableDotRule: true,
       index: '404.html'
     }
   }
