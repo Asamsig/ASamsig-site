@@ -1,4 +1,4 @@
-enablePlugins(ScalaJSBundlerPlugin, UniversalPlugin)
+enablePlugins(ScalaJSBundlerPlugin, UniversalPlugin, ScalablyTypedConverterPlugin)
 
 scalacOptions ++= Seq(
     "-deprecation",
@@ -17,15 +17,16 @@ webpack / version := "4.44.1"
 
 webpackConfigFile := Some(baseDirectory.value / "webpack.config.js")
 
+scalaJSUseMainModuleInitializer := true
 // Optional: Disable source maps to speed up compile times
-//scalaJSLinkerConfig ~= { _.withSourceMap(false) }
+scalaJSLinkerConfig ~= { _.withSourceMap(false) }
 
+Compile / npmDependencies += "@pulumi/aws" -> "3.2.1"
 
-// Incluce type defintion for aws lambda handlers
-libraryDependencies += "net.exoego" %%% "aws-lambda-scalajs-facade" % "0.11.0"
+stStdlib := List("esnext")
 
 // Optional: Include some nodejs types (useful for, say, accessing the env)
-//libraryDependencies += "net.exoego" %%% "scala-js-nodejs-v12" % "0.12.0"
+//libraryDependencies += "net.exoego" %%% "scala-js-nodejs-v14" % "0.12.0"
 
 // Include scalatest
 libraryDependencies += "org.scalatest" %%% "scalatest" % "3.1.1" % "test"
@@ -34,5 +35,5 @@ libraryDependencies += "org.scalatest" %%% "scalatest" % "3.1.1" % "test"
 topLevelDirectory := None
 mappings in Universal ++= (webpack in (Compile, fullOptJS)).value.map { f =>
   // remove the bundler suffix from the file names
-  f.data -> f.data.getName().replace("-opt-bundle", "")
+  f.data -> f.data.getName.replace("-opt-bundle", "")
 }
