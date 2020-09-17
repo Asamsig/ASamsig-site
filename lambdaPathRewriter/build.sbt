@@ -18,8 +18,7 @@ webpack / version := "4.44.1"
 webpackConfigFile := Some(baseDirectory.value / "webpack.config.js")
 
 // Optional: Disable source maps to speed up compile times
-//scalaJSLinkerConfig ~= { _.withSourceMap(false) }
-
+scalaJSLinkerConfig ~= { _.withSourceMap(false) }
 
 // Incluce type defintion for aws lambda handlers
 libraryDependencies += "net.exoego" %%% "aws-lambda-scalajs-facade" % "0.11.0"
