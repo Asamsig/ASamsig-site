@@ -1,5 +1,7 @@
+import Common.awsUsEast1Provider
 import typings.pulumiAws.bucketMod.BucketArgs
 import typings.pulumiAws.bucketPolicyMod.BucketPolicyArgs
+import typings.pulumiAws.bucketPublicAccessBlockMod.BucketPublicAccessBlockArgs
 import typings.pulumiAws.cannedAclMod.CannedAcl
 import typings.pulumiAws.certificateMod.CertificateArgs
 import typings.pulumiAws.certificateValidationMod.CertificateValidationArgs
@@ -9,25 +11,25 @@ import typings.pulumiAws.getZoneMod.GetZoneArgs
 import typings.pulumiAws.inputMod.cloudfront._
 import typings.pulumiAws.inputMod.route53.RecordAlias
 import typings.pulumiAws.inputMod.s3.{BucketServerSideEncryptionConfiguration, BucketServerSideEncryptionConfigurationRule, BucketServerSideEncryptionConfigurationRuleApplyServerSideEncryptionByDefault, BucketWebsite}
+import typings.pulumiAws.mod.route53.Record
 import typings.pulumiAws.originAccessIdentityMod.OriginAccessIdentityArgs
 import typings.pulumiAws.providerMod.ProviderArgs
 import typings.pulumiAws.recordMod.RecordArgs
 import typings.pulumiAws.recordTypeMod.RecordType
-import typings.pulumiAws.regionMod.Region
 import typings.pulumiAws.{pulumiAwsStrings, mod => aws}
 import typings.pulumiPulumi.invokeMod.InvokeOptions
-import typings.pulumiPulumi.outputMod.Output_
-import typings.pulumiPulumi.resourceMod.CustomResourceOptions
-import typings.pulumiPulumi.{outputMod, pulumiPulumiRequire, mod => pulumi}
+import typings.pulumiPulumi.outputMod.Input
+import typings.pulumiPulumi.{pulumiPulumiRequire, mod => pulumi}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.DurationInt
 import scala.scalajs.js
 import scala.scalajs.js.JSConverters._
-import scala.scalajs.js.annotation.JSExport
+import scala.scalajs.js.annotation.{JSExport, JSExportAll}
+import scala.scalajs.js.|
 
 //@JSExportAll //TODO: Exports all public members, maybe change to explicit exports?
-object Demo extends App {
+object Main extends App {
   //Require Pulumi SDK
   pulumiPulumiRequire
 
@@ -58,92 +60,54 @@ object Demo extends App {
           .setErrorDocument("404.html")
       )
   )
-  //
-  //  // crawlDirectory recursive crawls the provided directory, applying the provided function
-  //  // to every file it contains. Doesn't handle cycles from symlinks.
-  //  function crawlDirectory(dir: string, f: (_: string) => void) {
-  //    val files = fs.readdirSync(dir)
-  //    for (val file of files) {
-  //      val filePath = `${dir}/${file}`
-  //      val stat = fs.statSync(filePath)
-  //      if (stat.isDirectory()) {
-  //        crawlDirectory(filePath, f)
-  //      }
-  //      if (stat.isFile()) {
-  //        f(filePath)
-  //      }
-  //    }
-  //  }
-  //
-  //  // Sync the contents of the source directory with the S3 bucket, which will in-turn show up on the CDN.
-  //  val webContentsRootPath = path.join(process.cwd(), config.pathToWebsiteContents)
-  //  console.log("Syncing contents from local disk at", webContentsRootPath)
-  //  crawlDirectory(
-  //    webContentsRootPath,
-  //    (filePath: string) => {
-  //      val relativeFilePath = filePath.replace(webContentsRootPath + "/", "")
-  //      val contentFile = new aws.s3.BucketObject(
-  //        relativeFilePath,
-  //        {
-  //          key= relativeFilePath,
-  //
-  //          acl= "public-read",
-  //          bucket= contentBucket,
-  //          contentType= mime.getType(filePath) || undefined,
-  //          source= new pulumi.asset.FileAsset(filePath),
-  //        },
-  //        {
-  //          parent= contentBucket,
-  //        })
-  //    })
-  //
-  //  // logsBucket is an S3 bucket that will contain the CDN's request logs.
-  //  val logsBucket = new aws.s3.Bucket("requestLogs",
-  //    {
-  //      bucket= `${config.targetDomain}-logs`,
-  //      acl= "private",
-  //    })
-  //
-  val tenMinutes = 60 * 10
 
-  /**
-   * Only provision a certificate (and related resources) if a certificateArn is _not_ provided via configuration.
-   */
-  val eastRegion = new aws.Provider("east", ProviderArgs()
-    .setProfile(aws.config.profile.get) //TODO: Call .get??
-    .setRegion(Region.`us-east-1`) // Per AWS, ACM certificate must be in the us-east-1 region.
+  val bucketPublicAccessBlock = new aws.s3.BucketPublicAccessBlock("contentBucketPublicAccessBlock",
+    BucketPublicAccessBlockArgs(
+      bucket = contentBucket.id
+    )
+      .setBlockPublicAcls(true)
+      .setBlockPublicPolicy(true)
+      .setIgnorePublicAcls(true)
+      .setRestrictPublicBuckets(true)
   )
-  //
-  val certificate = new aws.acm.Certificate("certificate",
-    CertificateArgs().
-      setDomainName(domainName)
-      .setSubjectAlternativeNamesVarargs(s"wwww.$domainName")
+
+  val certificate = new aws.acm.Certificate(s"$domainName-certificate",
+    CertificateArgs()
+      .setDomainName(domainName)
+      .setSubjectAlternativeNamesVarargs(s"www.$domainName")
       .setValidationMethod("DNS"),
-    CustomResourceOptions()
-      .setProvider(eastRegion)
+    awsUsEast1Provider
   )
+
+  val topLevelDomain = domainName.split('.').takeRight(2).mkString(".")
 
   val hostedZoneId = aws.route53.getZone(
     GetZoneArgs()
-      .setName(domainName),
+      .setName(topLevelDomain),
     InvokeOptions()
       .setAsync(true)
   ).toFuture.map(_.zoneId).toJSPromise
 
-//  private val value: typings.pulumiPulumi.outputMod.OutputInstance[String | typings.pulumiAws.recordTypeMod.RecordType] = certificate.domainValidationOptions.apply[String](validationOption => validationOption(0).resourceRecordType)
-//  /**
-//   * Create a DNS record to prove that we _own_ the domain we're requesting a certificate for.
-//   * See https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate-dns.html for more info.
-//   */
-//  val certificateValidationDomain = new aws.route53.Record(s"$domainName-validation",
-//    RecordArgs(
-//      certificate.domainValidationOptions.apply[String](validationOption => validationOption(0).resourceRecordName),
-//      value,
-//      hostedZoneId
-//    )
-//      .setRecords(certificate.domainValidationOptions.apply[js.Array[outputMod.Input[String]]](_.map(_.resourceRecordValue)))
-//      .setTtl(10.minutes.toSeconds.toDouble)
-//  )
+  val tenMinutes = 10.minutes.toSeconds.toDouble
+
+  /**
+   * Create a DNS record to prove that we _own_ the domain we're requesting a certificate for.
+   * See https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate-dns.html for more info.
+   */
+  val certificateValidationDomains: Input[js.Array[Input[String]]] = certificate.domainValidationOptions.apply[js.Array[Input[String]]](_.map { domainValidationOption =>
+    val record = new Record(s"${domainValidationOption.domainName}-validation",
+      RecordArgs(
+        domainValidationOption.resourceRecordName,
+        domainValidationOption.resourceRecordType,
+        hostedZoneId
+      )
+        .setRecordsVarargs(
+          domainValidationOption.resourceRecordValue,
+        )
+        .setTtl(tenMinutes)
+    )
+    record.fqdn
+  }.asInstanceOf[js.Array[Input[String]]])
 
   val originAccessIdentity = new aws.cloudfront.OriginAccessIdentity(
     "cloudFrontOriginAccessIdentity",
@@ -151,17 +115,16 @@ object Demo extends App {
       .setComment(contentBucket.bucket)
   )
 
-  private val s3CanonicalUserId: outputMod.Input[String] = originAccessIdentity.s3CanonicalUserId
-  private val policyStatement: js.Array[outputMod.Input[PolicyStatement]] = js.Array(
+  val policyStatement: js.Array[Input[PolicyStatement]] = js.Array(
     PolicyStatement(pulumiAwsStrings.Allow)
       .setActionVarargs("s3:GetObject")
-      .setResourceVarargs(s"${contentBucket.arn}/*")
+      .setResourceVarargs(contentBucket.arn[String](_ + "/*"))
       .setPrincipal(
-        AWSPrincipal(js.Array(s3CanonicalUserId))
+        AWSPrincipal(js.Array(originAccessIdentity.iamArn).asInstanceOf[Input[js.Array[Input[String]] | String]])
       )
   )
   val readPolicy = new aws.s3.BucketPolicy("readPolicy",
-    BucketPolicyArgs(contentBucket.bucket,
+    BucketPolicyArgs(contentBucket.id,
       PolicyDocument(
         policyStatement,
         pulumiAwsStrings.`2012-10-17`
@@ -179,17 +142,16 @@ object Demo extends App {
    * and https://github.com/terraform-providers/terraform-provider-aws/blob/master/aws/resource_aws_acm_certificate_validation.go
    * for the actual implementation.
    */
-//  val certificateValidation = new aws.acm.CertificateValidation("certificateValidation",
-//    CertificateValidationArgs(certificate.arn)
-//      .setValidationRecordFqdnsVarargs(certificateValidationDomain.fqdn),
-//    CustomResourceOptions()
-//      .setProvider(eastRegion)
-//  )
+  val certificateValidation = new aws.acm.CertificateValidation("certificateValidation",
+    CertificateValidationArgs(certificate.arn)
+      .setValidationRecordFqdns(certificateValidationDomains),
+    awsUsEast1Provider
+  )
 
-  private val methods: js.Array[outputMod.Input[String]] = js.Array("GET", "HEAD")
-  private val origin: js.Array[outputMod.Input[DistributionOrigin]] = js.Array(DistributionOrigin(contentBucket.bucketDomainName, s"s3-origin-$domainName")
+  val methods: js.Array[Input[String]] = js.Array("GET", "HEAD")
+  val origin: js.Array[Input[DistributionOrigin]] = js.Array(DistributionOrigin(contentBucket.bucketDomainName, s"s3-origin-$domainName")
     .setS3OriginConfig(
-      DistributionOriginS3OriginConfig(originAccessIdentity.id)
+      DistributionOriginS3OriginConfig(originAccessIdentity.cloudfrontAccessIdentityPath)
     )
   )
   // distributionArgs configures the CloudFront distribution. Relevant documentation:
@@ -211,7 +173,14 @@ object Demo extends App {
       .setCompress(true)
       .setMaxTtl(365.days.toSeconds.toDouble)
       .setMinTtl(30.days.toSeconds.toDouble)
-      .setDefaultTtl(30.days.toSeconds.toDouble),
+      .setDefaultTtl(30.days.toSeconds.toDouble)
+//      .setLambdaFunctionAssociationsVarargs(
+//        DistributionDefaultCacheBehaviorLambdaFunctionAssociation(
+//          "origin-request",
+//          PathRewriter.pathRewriterArn
+//        )
+//      )
+    ,
     enabled = true,
     // We only specify one origin for this distribution, the S3 content bucket.
     origins = origin,
@@ -228,52 +197,42 @@ object Demo extends App {
     // web service) it can return a different error code, and return the response for a different resource.
     .setCustomErrorResponsesVarargs(
       DistributionCustomErrorResponse(403)
-        .setResponseCode(404)
-        .setResponsePagePath("")
+        .setResponseCode(200)
+        .setResponsePagePath("/404.html")
     )
     // "All" is the most broad distribution, and also the most expensive.
     // "100" is the least broad, and also the least expensive.
     .setPriceClass("PriceClass_All")
-  //    defaultRootObject = "index.html",
 
   val distribution = new aws.cloudfront.Distribution("cdn", distributionArgs)
-
+val babber = PathRewriter.pathRewriterArn
   // Creates a new Route53 DNS record pointing the domain to the CloudFront distribution.
-  val route = new aws.route53.Record(
-    domainName,
-    RecordArgs(
-      name = domainName,
-      `type` = RecordType.A,
-      zoneId = hostedZoneId
-    ).setAliasesVarargs(
-      RecordAlias(
-        evaluateTargetHealth = true,
-        name = distribution.domainName,
-        //ZoneId is always 'Z2FDTNDATAQYW2' for CloudFront
-        zoneId = distribution.hostedZoneId
-      )
-    )
-  )
-  val wwwRoute = new aws.route53.Record(
-    domainName,
-    RecordArgs(
-      name = s"wwww.$domainName",
-      `type` = RecordType.A,
-      zoneId = hostedZoneId
-    ).setAliasesVarargs(
-      RecordAlias(
-        evaluateTargetHealth = true,
-        name = distribution.domainName,
-        //ZoneId is always 'Z2FDTNDATAQYW2' for CloudFront
-        zoneId = distribution.hostedZoneId
-      )
-    )
-  )
+  val route = cloudfrontAliasRecord(domainName, distribution)
+  val wwwRoute = cloudfrontAliasRecord(s"www.$domainName", distribution)
 
+  private def cloudfrontAliasRecord(domain: String, distribution: aws.cloudfront.Distribution) = {
+    new Record(
+      domain,
+      RecordArgs(
+        name = domain,
+        `type` = RecordType.A,
+        zoneId = hostedZoneId
+      ).setAliasesVarargs(
+        RecordAlias(
+          evaluateTargetHealth = true,
+          name = distribution.domainName,
+          //ZoneId is always 'Z2FDTNDATAQYW2' for CloudFront
+          zoneId = distribution.hostedZoneId
+        )
+      )
+    )
+  }
+
+  //TODO: This didn't work
   // Export properties from this stack. This prints them at the end of `pulumi up` and
   // makes them easier to access from the pulumi.com.
   @JSExport
-  val contentBucketUri = s"s3://${contentBucket.bucket}"
+  val contentBucketUri = contentBucket.bucket[String]("s3://" + _)
   @JSExport
   val contentBucketWebsiteEndpoint = contentBucket.websiteEndpoint
   @JSExport

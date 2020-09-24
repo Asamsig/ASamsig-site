@@ -3,7 +3,8 @@ package asamsig.posts
 import asamsig.Main
 import asamsig.reacthelmet.Helmet
 import asamsig.remarkreact.{ReactRenderer, Remark}
-import io.scalajs.nodejs.fs.Fs
+import io.scalajs.nodejs.fs.Fs.Dirent
+import io.scalajs.nodejs.fs.{Fs, ReaddirOptions}
 import org.scalajs.dom.raw.XMLHttpRequest
 import slinky.core.annotations.react
 import slinky.core.facade.Hooks._
@@ -49,9 +50,19 @@ import scala.scalajs.js.Dynamic.literal
 }
 
 object PostsTree {
-  val tree: List[(String, List[(String, String)])] = List(
-    "Posts" -> List()
-  )
+  val tree: List[(String, List[(String, String)])] = {
+    if (Main.isSSR) {
+      val pageLocation = "../../../../public/posts"
+      val ret = js.Dynamic.global.fs.asInstanceOf[Fs].readdirSync(pageLocation, ReaddirOptions(withFileTypes = true)).asInstanceOf[js.Array[Dirent]]
+        .filter(dirent => dirent.isDirectory())
+        .map(dirent => dirent.name.asInstanceOf[String])
+      ret.toList.map(_ -> List())
+    } else {
+      List(
+        "Posts" -> List()
+      )
+    }
+  }
 }
 
 object TrackSSRPosts {

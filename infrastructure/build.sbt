@@ -21,12 +21,14 @@ scalaJSUseMainModuleInitializer := true
 
 // Optional: Disable source maps to speed up compile times
 scalaJSLinkerConfig ~= {
-  _.withSourceMap(false).withModuleKind(ModuleKind.CommonJSModule)
+  _.withSourceMap(true).withModuleKind(ModuleKind.CommonJSModule)
 }
 
 Compile / additionalNpmConfig := Map(
   "main" -> scalajsbundler.util.JSON.str("infrastructure-fastopt.js"),
 )
+
+stEnableScalaJsDefined := Selection.All
 
 webpackBundlingMode := BundlingMode.LibraryOnly()
 
@@ -37,6 +39,9 @@ stStdlib := List("esnext")
 
 // Optional: Include some nodejs types (useful for, say, accessing the env)
 //libraryDependencies += "net.exoego" %%% "scala-js-nodejs-v14" % "0.12.0"
+
+// Incluce type defintion for aws lambda handlers
+libraryDependencies += "net.exoego" %%% "aws-lambda-scalajs-facade" % "0.11.0"
 
 // Include scalatest
 libraryDependencies += "org.scalatest" %%% "scalatest" % "3.1.1" % "test"
