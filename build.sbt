@@ -14,6 +14,11 @@ scalacOptions ++= Seq(
   "-Xlint",
 )
 
+lazy val root = (project in file("."))
+  // always run all commands on each sub project
+  .aggregate(site, lambdaPathRewriter, infrastructure)
+//  .dependsOn(site, lambdaPathRewriter, infrastructure) // this does the actual aggregation
+
 lazy val site = (project in file("site"))
   .settings(scalaVersion := scalaV)
 
@@ -22,3 +27,5 @@ lazy val lambdaPathRewriter = (project in file("lambdaPathRewriter"))
 
 lazy val infrastructure = (project in file("infrastructure"))
   .settings(scalaVersion := scalaV)
+
+addCommandAlias("build", "fullOptJS::webpack;universal:packageBin")

@@ -12,7 +12,7 @@ scalaJSLinkerConfig ~= {
 }
 
 Compile / additionalNpmConfig := Map(
-  "main" -> scalajsbundler.util.JSON.str("infrastructure-fastopt.js"),
+  "main" -> scalajsbundler.util.JSON.str("infrastructure-opt.js"),
 )
 
 fastOptJS / webpackBundlingMode := BundlingMode.LibraryOnly()
