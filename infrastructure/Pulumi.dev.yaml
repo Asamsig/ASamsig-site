@@ -1,3 +1,4 @@
 config:
+  aws:profile: ASamsig
   aws:region: eu-north-1
   static-website:domainName: pulumi.asamsig.com

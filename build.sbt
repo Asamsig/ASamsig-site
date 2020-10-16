@@ -1,15 +1,24 @@
 val scalaV = "2.13.3"
-val slinkyVersion = "0.6.5"
 
-lazy val lambdaPathRewriter = (project in file("lambdaPathRewriter"))
-  .settings(scalaVersion := scalaV)
+scalacOptions ++= Seq(
+  "-deprecation",
+  "-encoding", "UTF-8",
+  // Explain type errors in more detail.
+  "-explaintypes",
+  // Warn when we use advanced language features
+  "-feature",
+  // Give more information on type erasure warning
+  "-unchecked",
+  // Enable warnings and lint
+  "-Ywarn-unused",
+  "-Xlint",
+)
 
 lazy val site = (project in file("site"))
   .settings(scalaVersion := scalaV)
 
-lazy val infrastructure = (project in file("infrastructure"))
+lazy val lambdaPathRewriter = (project in file("lambdaPathRewriter"))
   .settings(scalaVersion := scalaV)
 
-addCommandAlias("dev", ";site / fastOptJS::startWebpackDevServer;~fastOptJS")
-
-addCommandAlias("build", "site / fullOptJS::webpack")
+lazy val infrastructure = (project in file("infrastructure"))
+  .settings(scalaVersion := scalaV)

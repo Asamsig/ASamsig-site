@@ -1,5 +1,7 @@
 enablePlugins(ScalaJSBundlerPlugin)
 
+val slinkyVersion = "0.6.5"
+
 Compile / npmDependencies += "react" -> "16.13.1"
 Compile / npmDependencies += "react-dom" -> "16.13.1"
 Compile / npmDependencies += "react-proxy" -> "1.1.8"
@@ -27,10 +29,10 @@ fullOptJS / webpackConfigFile := Some(baseDirectory.value / "webpack-opt.config.
 fastOptJS / webpackDevServerExtraArgs := Seq("--inline", "--hot")
 fastOptJS / webpackBundlingMode := BundlingMode.LibraryOnly()
 
-libraryDependencies += "me.shadaj" %%% "slinky-web" % "0.6.5"
-libraryDependencies += "me.shadaj" %%% "slinky-hot" % "0.6.5"
-libraryDependencies += "me.shadaj" %%% "slinky-react-router" % "0.6.5"
-libraryDependencies += "me.shadaj" %%% "slinky-history" % "0.6.5"
+libraryDependencies += "me.shadaj" %%% "slinky-web" % slinkyVersion
+libraryDependencies += "me.shadaj" %%% "slinky-hot" % slinkyVersion
+libraryDependencies += "me.shadaj" %%% "slinky-react-router" % slinkyVersion
+libraryDependencies += "me.shadaj" %%% "slinky-history" % slinkyVersion
 
 // Optional: Include some nodejs types (useful for, say, accessing the env)
 libraryDependencies += "net.exoego" %%% "scala-js-nodejs-v12" % "0.12.0"
@@ -38,6 +40,6 @@ libraryDependencies += "net.exoego" %%% "scala-js-nodejs-v12" % "0.12.0"
 // if using Scala 2.13.0, instead use
 scalacOptions += "-Ymacro-annotations"
 
-//addCommandAlias("dev", ";fastOptJS::startWebpackDevServer;~fastOptJS")
+addCommandAlias("dev", ";fastOptJS::startWebpackDevServer;~fastOptJS")
 
-//addCommandAlias("build", "fullOptJS::webpack")
+addCommandAlias("build", "fullOptJS::webpack")

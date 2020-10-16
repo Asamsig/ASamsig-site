@@ -35,3 +35,5 @@ mappings in Universal ++= (webpack in (Compile, fullOptJS)).value.map { f =>
   // remove the bundler suffix from the file names
   f.data -> f.data.getName().replace("-opt-bundle", "")
 }
+
+addCommandAlias("build", "universal:packageBin")

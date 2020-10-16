@@ -15,6 +15,15 @@ jobs:
           java-version: graalvm-ce-java11@
       - name: Build site
         run: sbt build
+      - uses: docker://pulumi/actions
+          with:
+            args: up --yes
+          env:
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+            PULUMI_CI: up
+            PULUMI_ROOT: 'infrastructure'
       - name: Upload site to AWS S3
         uses: jakejarvis/s3-sync-action@master
         with:
@@ -24,7 +33,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: 'us-east-1'
-          SOURCE_DIR: 'build'
+          SOURCE_DIR: 'site/build'
       - name: Invalidate AWS Cloudfront distribution cache
         uses: awact/cloudfront-action@master
         env:

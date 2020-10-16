@@ -1,4 +1,3 @@
-
 import typings.pulumiAws.providerMod.ProviderArgs
 import typings.pulumiAws.regionMod.Region
 import typings.pulumiAws.{mod => aws}
