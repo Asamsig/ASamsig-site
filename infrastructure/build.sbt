@@ -1,3 +1,5 @@
+import scalajsbundler.util.JSON
+
 enablePlugins(ScalaJSBundlerPlugin, ScalablyTypedConverterPlugin)
 
 webpack / version := "4.44.1"
@@ -12,12 +14,10 @@ scalaJSLinkerConfig ~= {
 }
 
 Compile / additionalNpmConfig := Map(
-  "main" -> scalajsbundler.util.JSON.str("infrastructure-opt.js"),
+  "main" -> JSON.str("infrastructure-opt.js"),
 )
 
-fastOptJS / webpackBundlingMode := BundlingMode.LibraryOnly()
-fullOptJS / webpackBundlingMode := BundlingMode.LibraryAndApplication()
-//webpackBundlingMode := BundlingMode.ApplicationAndLibrary()
+webpackBundlingMode := BundlingMode.LibraryOnly()
 
 //useYarn := true
 

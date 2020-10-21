@@ -8,7 +8,7 @@ import scala.scalajs.js.{Promise, RegExp}
 object PathRewriterLambda {
 
   def rewritePath(event: CloudFrontRequestEvent)(implicit executionContext: ExecutionContext): Future[CloudFrontRequestResult] = {
-    val pointsToFile: String => Boolean = uri => RegExp("""/\/[^/]+\.[^/]+$/""").test(uri)
+    val pointsToFile: String => Boolean = uri => RegExp("""\/[^/]+\.[^/]+$""").test(uri)
     val hasTrailingSlash: String => Boolean = uri => uri.endsWith("/")
     val request = event.Records(0).cf.request
     val oldUri = request.uri

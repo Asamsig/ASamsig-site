@@ -15,7 +15,8 @@ jobs:
           java-version: graalvm-ce-java11@
       - name: Build site
         run: sbt build
-      - uses: docker://pulumi/actions
+      - name: Deploy Pulumi stack
+        uses: docker://pulumi/actions
           with:
             args: up --yes
           env:
@@ -24,23 +25,25 @@ jobs:
             PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
             PULUMI_CI: up
             PULUMI_ROOT: 'infrastructure'
+      - name: Export Pulumi stack variables
+        run: pulumi stack output Exports -j | jq -r 'to_entries | map("" + .key+"=" + (.value | tostring)+" >> $GITHUB_ENV^") | .[]' | xargs -d '^' echo
       - name: Upload site to AWS S3
         uses: jakejarvis/s3-sync-action@master
         with:
           args: --follow-symlinks --delete --cache-control 'public, max-age=2628000'
         env:
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_S3_BUCKET: ${{ env.contentBucketUri }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: 'us-east-1'
+          AWS_REGION: 'eu-north-1' #Output region from Pulumi?
           SOURCE_DIR: 'site/build'
       - name: Invalidate AWS Cloudfront distribution cache
-        uses: awact/cloudfront-action@master
+        uses: chetan/invalidate-cloudfront-action@master
         env:
-          SOURCE_PATH: '/*'
-          AWS_REGION: 'us-east-1'
+          PATHS: '*'
+          AWS_REGION: 'us-east-1' #Output region from Pulumi? Will always be us-east-1 since it is Cloudfront
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          DISTRIBUTION_ID: ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID }}
+          DISTRIBUTION: ${{ env.cloudFrontId }}
 
-      
+

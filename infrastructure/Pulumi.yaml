@@ -3,5 +3,5 @@ runtime:
   name: nodejs
   options:
     typescript: false
-description: A minimal AWS Scala.sjs Pulumi program
+description: A minimal AWS Scala.js Pulumi program
 main: target/scala-2.13/scalajs-bundler/main

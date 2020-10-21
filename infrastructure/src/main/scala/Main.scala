@@ -12,7 +12,7 @@ object Main extends App {
   @JSExportTopLevel("Exports")
   object Exports extends js.Object {
     val cloudFrontId = Site.distribution.id
-    val contentBucketUri = Site.contentBucket.bucket[String](bucket => "s3://" + bucket)
+    val contentBucketUri = Site.contentBucket.bucket
     val contentBucketWebsiteEndpoint = Site.contentBucket.websiteEndpoint
     val cloudFrontDomain = Site.distribution.domainName
     val targetDomainEndpoint = s"https://${Site.domainName}/"

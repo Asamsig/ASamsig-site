@@ -36,4 +36,4 @@ mappings in Universal ++= (webpack in (Compile, fullOptJS)).value.map { f =>
   f.data -> f.data.getName().replace("-opt-bundle", "")
 }
 
-addCommandAlias("build", "universal:packageBin")
+maintainer := "ASamsig"
