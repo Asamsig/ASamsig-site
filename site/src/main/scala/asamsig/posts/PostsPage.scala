@@ -3,6 +3,8 @@ package asamsig.posts
 import asamsig.Main
 import asamsig.reacthelmet.Helmet
 import asamsig.remarkreact.{ReactRenderer, Remark}
+import io.scalajs.nodejs.fs.Fs.Dirent
+import io.scalajs.nodejs.fs.{Fs, ReaddirOptions}
 import org.scalajs.dom.raw.XMLHttpRequest
 import slinky.core.annotations.react
 import slinky.core.facade.Hooks._
@@ -48,9 +50,19 @@ import scala.scalajs.js.Dynamic.literal
 }
 
 object PostsTree {
-  val tree: List[(String, List[(String, String)])] = List(
-    "Posts" -> List()
-  )
+  val tree: List[(String, List[(String, String)])] = {
+    if (Main.isSSR) {
+      val pageLocation = "../../../../public/posts"
+      val ret = js.Dynamic.global.fs.asInstanceOf[Fs].readdirSync(pageLocation, ReaddirOptions(withFileTypes = true)).asInstanceOf[js.Array[Dirent]]
+        .filter(dirent => dirent.isDirectory())
+        .map(dirent => dirent.name.asInstanceOf[String])
+      ret.toList.map(_ -> List())
+    } else {
+      List(
+        "Posts" -> List()
+      )
+    }
+  }
 }
 
 object TrackSSRPosts {
@@ -58,7 +70,7 @@ object TrackSSRPosts {
 
   def getPublic(page: String): String = {
     val pageLocation = "../../../../public" + page
-    val ret = js.Dynamic.global.fs.readFileSync(pageLocation, "UTF-8").asInstanceOf[String]
+    val ret = js.Dynamic.global.fs.asInstanceOf[Fs].readFileSync(pageLocation, "UTF-8")
     publicSSR(page) = ret
     ret
   }
@@ -67,12 +79,12 @@ object TrackSSRPosts {
 @react object PostsPage {
   def postsFilePath(props: js.Dynamic) = {
     val matchString = props.selectDynamic("match").params.selectDynamic("0").toString
-    s"/posts/${matchString.reverse.dropWhile(_ == '/').reverse.replace(".html", "")}.md"
+    s"/posts/${matchString.reverse.dropWhile(_ == '/').reverse}.md"
   }
 
   val component = FunctionalComponent[js.Dynamic] { props =>
     val matchString = props.selectDynamic("match").params.selectDynamic("0").toString
-    val selectedGroup = PostsTree.tree.find(_._2.exists(_._2 == s"/posts/${matchString.replace(".html", "")}")).map(_._1)
+    val selectedGroup = PostsTree.tree.find(_._2.exists(_._2 == s"/posts/${matchString}")).map(_._1)
     val (document, setDocument) = useState(() => {
       if (Main.isSSR) {
         Some(TrackSSRPosts.getPublic(postsFilePath(props)))

@@ -74,7 +74,7 @@ object Main {
        |      $reactTree
        |    </div>
        |    <script type="text/javascript">window.publicSSR = ${js.JSON.stringify(TrackSSRPosts.publicSSR)}</script>
-       |    <script async src="/asamsig-site-opt-bundle.js"></script>
+       |    <script async src="/site-opt-bundle.js"></script>
        |  </body>
        |</html>""".stripMargin
   }

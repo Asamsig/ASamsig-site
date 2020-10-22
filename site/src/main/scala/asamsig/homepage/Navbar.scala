@@ -70,7 +70,7 @@ import scala.scalajs.js
             marginRight = "auto"
           )
         )(
-          Link(to = "/posts/welcome.html")(style := linkStyle)(
+          Link(to = "/posts/welcome")(style := linkStyle)(
             "Blog"
           )
         ),

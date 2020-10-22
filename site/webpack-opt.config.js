@@ -9,7 +9,7 @@ const OfflinePlugin = require('offline-plugin');
 module.exports = {
   mode: "production",
   entry: {
-    "asamsig-site-opt": [path.resolve(__dirname, "./opt-launcher.js")]
+    "site-opt": [path.resolve(__dirname, "./opt-launcher.js")]
   },
   output: {
     "path": path.resolve(__dirname, "../../../../build"),

@@ -1,4 +1,4 @@
-var opt = require("./asamsig-site-opt.js");
+var opt = require("./site-opt.js");
 
 if (typeof ssr !== 'undefined') {
     module.exports = function render(locals, callback) {
