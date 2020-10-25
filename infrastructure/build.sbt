@@ -38,3 +38,9 @@ libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.0" % "test"
 
 // root webpack config file
 webpackConfigFile := Some(baseDirectory.value / "webpack.config.js")
+
+Global / stRemoteCache := RemoteCache.S3Aws(
+  bucket = "asamsig-scalablytyped-caches",
+  region = "eu-north-1",
+  prefix = Some("st-cache")
+)
