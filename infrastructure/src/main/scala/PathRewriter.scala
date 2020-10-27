@@ -1,10 +1,11 @@
 import Common.awsUsEast1Provider
+import org.scalablytyped.runtime.StringDictionary
 import typings.pulumiAws.documentsMod.{PolicyDocument, PolicyStatement}
 import typings.pulumiAws.lambdaFunctionMod.FunctionArgs
 import typings.pulumiAws.roleMod.RoleArgs
 import typings.pulumiAws.rolePolicyAttachmentMod.RolePolicyAttachmentArgs
 import typings.pulumiAws.{pulumiAwsStrings, mod => aws}
-import typings.pulumiPulumi.assetMod.FileArchive
+import typings.pulumiPulumi.assetMod.{AssetArchive, FileAsset}
 import typings.pulumiPulumi.mod.asset.Archive
 import typings.pulumiPulumi.outputMod.Input
 
@@ -34,7 +35,8 @@ object PathRewriter {
     RolePolicyAttachmentArgs(aws.iam.ManagedPolicies.AWSLambdaBasicExecutionRole, role)
   )
 
-  val archive: Input[Archive] = new FileArchive("../../../../../lambdaPathRewriter/target/universal/lambdapathrewriter-0.1.0-SNAPSHOT.zip").asInstanceOf[Archive]
+  private val pathToArchive = "../../../../../lambdaPathRewriter/target/scala-2.13/scalajs-bundler/main/lambdapathrewriter-opt-bundle.js"
+  private val archive: Input[Archive] = new AssetArchive(StringDictionary("lambdapathrewriter.js" -> new FileAsset(pathToArchive))).asInstanceOf[Archive]
   val lambda = new aws.lambda.Function(s"$lambdaName-Function",
     FunctionArgs(
       handler = "lambdapathrewriter.handler",

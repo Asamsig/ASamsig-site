@@ -28,4 +28,4 @@ lazy val lambdaPathRewriter = (project in file("lambdaPathRewriter"))
 lazy val infrastructure = (project in file("infrastructure"))
   .settings(scalaVersion := scalaV)
 
-addCommandAlias("build", "fullOptJS::webpack;universal:packageBin")
+addCommandAlias("build", "fullOptJS::webpack")

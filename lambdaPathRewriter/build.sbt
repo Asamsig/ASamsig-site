@@ -1,4 +1,4 @@
-enablePlugins(ScalaJSBundlerPlugin, UniversalPlugin)
+enablePlugins(ScalaJSBundlerPlugin)
 
 scalacOptions ++= Seq(
     "-deprecation",
@@ -28,12 +28,3 @@ libraryDependencies += "net.exoego" %%% "aws-lambda-scalajs-facade" % "0.11.0"
 
 // Include scalatest
 libraryDependencies += "org.scalatest" %%% "scalatest" % "3.1.1" % "test"
-
-// Package lambda as a zip. Use `universal:packageBin` to create the zip
-topLevelDirectory := None
-mappings in Universal ++= (webpack in (Compile, fullOptJS)).value.map { f =>
-  // remove the bundler suffix from the file names
-  f.data -> f.data.getName().replace("-opt-bundle", "")
-}
-
-maintainer := "ASamsig"
