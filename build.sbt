@@ -1,4 +1,4 @@
-val scalaV = "2.13.3"
+val scalaV = "2.13.6"
 
 scalacOptions ++= Seq(
   "-deprecation",
@@ -14,7 +14,7 @@ scalacOptions ++= Seq(
   "-Xlint",
 )
 
-lazy val root = (project in file("."))
+lazy val `asamsig-website` = (project in file("."))
   // always run all commands on each sub project
   .aggregate(site, lambdaPathRewriter, infrastructure)
 //  .dependsOn(site, lambdaPathRewriter, infrastructure) // this does the actual aggregation

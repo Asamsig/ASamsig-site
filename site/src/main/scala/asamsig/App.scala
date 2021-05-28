@@ -1,5 +1,6 @@
 package asamsig
 
+import asamsig.calculator.CalculatorPage
 import asamsig.context.DarkMode
 import asamsig.homepage.{Homepage, Navbar}
 import asamsig.posts.PostsPage
@@ -43,6 +44,7 @@ import scala.scalajs.js
         ))(
           Switch(
             Route("/", Homepage.component, exact = true),
+            Route("/calculator", CalculatorPage.component, exact = true),
             Route("/posts/*", PostsPage.component),
             Route("*", Homepage.component)
           )

@@ -72,6 +72,9 @@ import scala.scalajs.js
         )(
           Link(to = "/posts/welcome")(style := linkStyle)(
             "Blog"
+          ),
+          Link(to = "/calculator")(style := linkStyle)(
+            "Percentage calculator"
           )
         ),
         Main.darkModeContext.Consumer { darkMode =>

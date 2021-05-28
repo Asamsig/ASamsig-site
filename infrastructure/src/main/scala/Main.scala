@@ -8,7 +8,7 @@ object Main extends App {
   pulumiPulumiRequire
 
   // Export properties from this stack. This prints them at the end of `pulumi up` and
-  // makes them accessible via pulumi stack output and visible on the pulumi.com.
+  // makes them accessible via pulumi stack output and visible on pulumi.com.
   @JSExportTopLevel("Exports")
   object Exports extends js.Object {
     val cloudFrontId = Site.distribution.id
